@@ -23,15 +23,15 @@ then
 elif [ $opcion = "No" ]
 then
 	userdel -r $nombre
-	PassWD=`cat /etc/passwd | cut -d ':' -f 1 | grep $nombre`
+        PassWD=`cat /etc/passwd | cut -d ':' -f 1 | grep $nombre`
 
-	if [ -r $PassWD ]
-	then
-		echo "Usuario borrado satisfactoriamente"
-		echo "$UID;$USER;$DATE;$TIME;$SHELL;$SSH_CONNECTION;userdel -r $nombre" >> /var/log/ScriptLogic.log
-	else
-		echo "Ocurrio un error el usuario no fue eliminado correctamente, intentelo nuevamente"
-	fi
+        if [ -r $PassWD ]
+        then
+                echo "Usuario borrado satisfactoriamente"
+                echo "$UID;$USER;$DATE;$TIME;$SHELL;$SSH_CONNECTION;userdel -r $nombre" >> /var/log/ScriptLogic.log
+        else
+                echo "Ocurrio un error el usuario no fue eliminado correctamente, intentelo nuevamente"
+        fi
 
 else
 

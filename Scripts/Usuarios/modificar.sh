@@ -10,32 +10,35 @@ then
 else
 	passwdRead=`cat /etc/passwd | cut -d ':' -f 1 | grep $nombre`
 
-	if [ ! -z $passwdRead ] #Revisa que no exista previamente
+	if [ -z $passwdRead ] #Revisa que exista previamente
 	then
 
-		echo "El nombre de usuario ya existe"
+		echo "El nombre de usuario no existe"
 
-	else #Si no existe continua
+	else #Si existe continua
 
-		echo "Grupo Primario"
+		echo "Cambiar Grupo Primario"
 		read grupo
-
-		if [ -r $grupo ]
+		if [ -z $grupo ]
 		then
-			echo "El grupo primario no puede ser vacio"
+
+			grupo=""
 		else
+
+
 		groupReadName=`cat /etc/group | cut -d ':' -f 1 | grep "$grupo"`
 		groupReadGID=`cat /etc/group | cut -d ':' -f 3 | grep "$grupo"`
 
 		if [ -z $groupReadName ] && [ -z $groupReadGID ]
 		then
-			echo "El grupo no existe"
+			echo "El grupo no existe, se mantiene el anterior"
 
 		else
 
 			grupo=" -g $grupo"
-
-			echo "Home (por defecto /home/NombreDeUsuario)"
+		fi
+		fi
+			echo "Cambiar Home"
 			read home
 
 			if [ -r $home ]
@@ -45,7 +48,7 @@ else
 				home=" -d $home"
 			fi
 
-			echo "Grupo Secundario (opcional)"
+			echo "Cmabiar Grupo Secundario"
 			read secundario
 
 			if [ -r $secundario ]
@@ -63,7 +66,7 @@ else
 				fi
 
 			fi
-			echo "Comentario (opcional)"
+			echo "Cambiar comentario"
 			read comentario
 
 			if [ -r $comentario ]
@@ -73,7 +76,7 @@ else
 				comentario="-c $comentario"
 			fi
 
-			echo "Tipo de shell (por defecto bash)"
+			echo "Cambiar Tipo de shell"
 			read shell
 
 			if [ -r $shell ]
@@ -84,23 +87,18 @@ else
 			fi
 
 			PassWD=`cat /etc/passwd | cut -d ':' -f 1 | grep $nombre`
-			agregar="$nombre $grupo $home $secundario $comentario $shell -m" 
-			useradd $agregar
+			cambiar="$nombre $grupo $home $secundario $comentario $shell" 
+			usermod $cambiar
 
 
-			if [ -r $PassWD ]
-		        then
-					echo "Usuario agregado satisfactoriamente"
-					echo "Eliga un contraseña"
-					passwd $nombre
-					echo "$UID;$USER;$DATE;$TIME;$SHELL;$SSH_CONNECTION;useradd $agregar passwd $nombre" >> /var/log/ScriptLogic.log
-       			else
-					echo "Ocurrio un error el usuario no fue agregado correctamente, intentelo nuevamente"
-       			fi
 
-		fi #Fin, grupo primario
+               			echo "Usuario modificado satisfactoriamente"
 
-		fi #Fin, grupo primario vacio
+               			echo "$UID;$USER;$DATE;$TIME;$SHELL;$SSH_CONNECTION;usermod $cambiar" >> /var/log/ScriptLogic.log
+
+               			#echo "Ocurrio un error el usuario no fue agregado correctamente, intentelo nuevamente"
+
+
 	fi #Fin, existe previamente
 
 fi #Fin, nombre vacio
